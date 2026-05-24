@@ -1,0 +1,3 @@
+mandelbrot_sequential
+*.o
+results/*.ppm
