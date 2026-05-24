@@ -3,3 +3,4 @@ mandelbrot_openmp_ai
 *.o
 results/*.ppm
 results/*.png
+mandelbrot_scheduler
