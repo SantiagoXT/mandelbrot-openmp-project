@@ -1,3 +1,5 @@
 mandelbrot_sequential
+mandelbrot_openmp_ai
 *.o
 results/*.ppm
+results/*.png
