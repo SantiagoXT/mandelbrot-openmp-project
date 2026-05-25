@@ -4,3 +4,5 @@ mandelbrot_openmp_ai
 results/*.ppm
 results/*.png
 mandelbrot_scheduler
+mandelbrot_histogram
+results/raw/*.csv
