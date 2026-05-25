@@ -1,39 +1,90 @@
 # Mandelbrot OpenMP Project
 
-Proyecto de evaluacion de paralelizacion con OpenMP.
-
-## Estado actual
-
-Version secuencial base.
+Proyecto de evaluacion de paralelizacion con OpenMP usando C++.
 
 El programa realiza dos tareas principales:
 
 1. Genera una imagen del conjunto de Mandelbrot.
 2. Aplica un filtro de convolucion 2D pesado sobre la imagen generada.
 
+## Versiones implementadas
+
+Actualmente el proyecto incluye:
+
+- mandelbrot_sequential: version secuencial base.
+- mandelbrot_openmp_ai: linea base paralela generada con OpenMP.
+- mandelbrot_scheduler: version para evaluar planificadores de OpenMP usando OMP_SCHEDULE.
+
 ## Compilacion
 
 make
 
-## Ejecucion rapida
+## Ejecuciones rapidas
 
-make run-small
+Version secuencial:
 
-## Ejecucion manual
+make run-seq-small
 
-./mandelbrot_sequential [width] [height] [iterations] [blur_radius]
+Version OpenMP base:
 
-Ejemplo:
+make run-omp-small
 
-./mandelbrot_sequential 1000 1000 1000 5
+Pruebas de scheduler:
+
+make run-sched-static-small
+make run-sched-dynamic-small
+make run-sched-guided-small
+
+## Benchmark de schedulers
+
+El proyecto incluye un script para comparar static, dynamic y guided con diferentes tamanos de bloque.
+
+Ejemplo formal:
+
+./scripts/benchmark_schedulers.sh 1920 1080 1000 8 4 5
+
+Argumentos:
+
+width height iterations blur_radius threads repeats
+
+Ejemplo rapido:
+
+./scripts/benchmark_schedulers.sh 1000 1000 1000 5 4 2
+
+Los resultados se guardan como archivos CSV en:
+
+results/raw/
+
+Para resumir el CSV mas reciente:
+
+python3 scripts/summarize_scheduler.py
 
 ## Salidas
 
-El programa genera dos imagenes en formato PPM:
+El programa genera imagenes en formato PPM:
 
 results/mandelbrot_original.ppm
 results/mandelbrot_filtered.ppm
 
-## Notas
+Estas imagenes no se suben al repositorio porque son archivos generados.
 
-Esta version no usa OpenMP. Sirve como linea base secuencial inicial.
+## Prompts
+
+Los prompts utilizados se encuentran en:
+
+prompts.md
+
+## Estado actual del proyecto
+
+Completado:
+
+1. Codigo secuencial base.
+2. Linea base paralela con OpenMP.
+3. Benchmark de schedulers de OpenMP.
+
+Pendiente:
+
+1. Histograma de colores y comparacion de sincronizacion.
+2. Analisis de false sharing.
+3. Vectorizacion/SPMD.
+4. Graficas y reporte tecnico final.
