@@ -6,3 +6,5 @@ results/*.png
 mandelbrot_scheduler
 mandelbrot_histogram
 results/raw/*.csv
+mandelbrot_simd
+results/raw/*.txt

@@ -6,13 +6,15 @@ TARGET_SEQ = mandelbrot_sequential
 TARGET_OMP = mandelbrot_openmp_ai
 TARGET_SCHED = mandelbrot_scheduler
 TARGET_HIST = mandelbrot_histogram
+TARGET_SIMD = mandelbrot_simd
 
 SRC_SEQ = src/main.cpp
 SRC_OMP = src/main_openmp_ai.cpp
 SRC_SCHED = src/main_scheduler.cpp
 SRC_HIST = src/main_histogram.cpp
+SRC_SIMD = src/main_simd.cpp
 
-all: $(TARGET_SEQ) $(TARGET_OMP) $(TARGET_SCHED) $(TARGET_HIST)
+all: $(TARGET_SEQ) $(TARGET_OMP) $(TARGET_SCHED) $(TARGET_HIST) $(TARGET_SIMD)
 
 $(TARGET_SEQ): $(SRC_SEQ)
 	$(CXX) $(CXXFLAGS) $(SRC_SEQ) -o $(TARGET_SEQ)
@@ -25,6 +27,9 @@ $(TARGET_SCHED): $(SRC_SCHED)
 
 $(TARGET_HIST): $(SRC_HIST)
 	$(CXX) $(CXXFLAGS) $(OMPFLAGS) $(SRC_HIST) -o $(TARGET_HIST)
+
+$(TARGET_SIMD): $(SRC_SIMD)
+	$(CXX) $(CXXFLAGS) $(OMPFLAGS) $(SRC_SIMD) -o $(TARGET_SIMD)
 
 run-seq-small: $(TARGET_SEQ)
 	./$(TARGET_SEQ) 1000 1000 1000 5
@@ -44,14 +49,8 @@ run-sched-guided-small: $(TARGET_SCHED)
 run-hist-small: $(TARGET_HIST)
 	OMP_NUM_THREADS=4 ./$(TARGET_HIST) 1000 1000 1000 5 all
 
-run-hist-atomic-small: $(TARGET_HIST)
-	OMP_NUM_THREADS=4 ./$(TARGET_HIST) 1000 1000 1000 5 atomic
-
-run-hist-critical-small: $(TARGET_HIST)
-	OMP_NUM_THREADS=4 ./$(TARGET_HIST) 1000 1000 1000 5 critical
-
-run-hist-local-small: $(TARGET_HIST)
-	OMP_NUM_THREADS=4 ./$(TARGET_HIST) 1000 1000 1000 5 local
+run-simd-small: $(TARGET_SIMD)
+	OMP_NUM_THREADS=4 ./$(TARGET_SIMD) 1000 1000 1000 5
 
 run-seq-medium: $(TARGET_SEQ)
 	./$(TARGET_SEQ) 1920 1080 1000 8
@@ -65,24 +64,20 @@ run-sched-medium: $(TARGET_SCHED)
 run-hist-medium: $(TARGET_HIST)
 	OMP_NUM_THREADS=4 ./$(TARGET_HIST) 1920 1080 1000 8 all
 
-run-seq-4k: $(TARGET_SEQ)
-	./$(TARGET_SEQ) 3840 2160 1000 8
+run-simd-medium: $(TARGET_SIMD)
+	OMP_NUM_THREADS=4 ./$(TARGET_SIMD) 1920 1080 1000 8
 
-run-omp-4k: $(TARGET_OMP)
-	OMP_NUM_THREADS=4 ./$(TARGET_OMP) 3840 2160 1000 8
-
-run-seq-8k: $(TARGET_SEQ)
-	./$(TARGET_SEQ) 7680 4320 1000 8
-
-run-omp-8k: $(TARGET_OMP)
-	OMP_NUM_THREADS=4 ./$(TARGET_OMP) 7680 4320 1000 8
+vectorization-report: $(SRC_SIMD)
+	mkdir -p results/raw
+	$(CXX) $(CXXFLAGS) $(OMPFLAGS) -fopt-info-vec-all=results/raw/vectorization_report.txt $(SRC_SIMD) -o $(TARGET_SIMD)
 
 clean:
 	rm -f $(TARGET_SEQ)
 	rm -f $(TARGET_OMP)
 	rm -f $(TARGET_SCHED)
 	rm -f $(TARGET_HIST)
+	rm -f $(TARGET_SIMD)
 	rm -f results/*.ppm
 	rm -f results/*.png
 
-.PHONY: all clean run-seq-small run-omp-small run-sched-static-small run-sched-dynamic-small run-sched-guided-small run-hist-small run-hist-atomic-small run-hist-critical-small run-hist-local-small run-seq-medium run-omp-medium run-sched-medium run-hist-medium run-seq-4k run-omp-4k run-seq-8k run-omp-8k
+.PHONY: all clean vectorization-report run-seq-small run-omp-small run-sched-static-small run-sched-dynamic-small run-sched-guided-small run-hist-small run-simd-small run-seq-medium run-omp-medium run-sched-medium run-hist-medium run-simd-medium
